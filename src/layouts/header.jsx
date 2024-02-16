@@ -10,8 +10,20 @@ import { Avatar, Dropdown, Navbar } from 'flowbite-react';
 import { SlSocialTwitter } from "react-icons/sl";
 import { IoLogoGoogleplus } from "react-icons/io";
 import { SlSocialInstagram } from "react-icons/sl";
+import { Button, Modal } from 'flowbite-react';
+import { useState } from 'react';
+import { useCart } from 'react-use-cart';
 
 export const Header = () => {
+    const [openModal, setOpenModal] = useState(false);
+    const {
+        isEmpty,
+        totalUniqueItems,
+        items,
+        updateItemQuantity,
+        removeItem,
+    } = useCart();
+
     return (
         <>
 
@@ -56,62 +68,105 @@ export const Header = () => {
 
 
 
-                <div className='h-[5vh] bg-[#f5f5f5]  text-[#888888] flex free'>
-                    <div className='flex gap-4 text-xl px-7 py-2'>
+            <div className='h-[5vh] bg-[#f5f5f5]  text-[#888888] flex free'>
+                <div className='flex gap-4 text-xl px-7 py-2'>
                     <TiSocialFacebook />
                     <TiSocialPinterestCircular />
                     <SlSocialTwitter />
                     <SlSocialInstagram />
                     <IoLogoGoogleplus />
 
-                    </div>
-                    <div className=' w-[73%] flex justify-center'>
+                </div>
+                <div className=' w-[73%] flex justify-center'>
 
                     <div className='font-mono py-2 '>
-                    Free shipping for standard order over $100
+                        Free shipping for standard order over $100
                     </div>
-                    </div>
-
                 </div>
+
+            </div>
             <Navbar fluid rounded className='bg-white shadow-lg  font-mono py-5 h-[10vh]'>
                 <Navbar.Brand href="https://flowbite-react.com" className='px-5'>
 
                     <span className="self-center whitespace-nowrap text-3xl font-bold  dark:text-white">w i s s .</span>
                 </Navbar.Brand>
                 <div className="flex md:order-2 text-2xl gap-4 cursor-pointer w-[10vw]  text-gray-500  justify-center">
-                <GoHeart />
-                <div className='border-l-2 px-5'>
+                    <GoHeart />
+                    <div className='border-l-2 px-5'>
 
-                <SlBasket className='cursor-pointer'  />
-                </div>
+                        <SlBasket className='cursor-pointer' onClick={() => setOpenModal(true)} />
+                    </div>
                     <Navbar.Toggle />
                 </div>
                 <div className=' w-[40vw] text-5xl flex justify-center gap-2  '>
 
-                <Navbar.Collapse className='  w-[100vw] flex justify-between'>
-                    <Navbar.Link href="#"  active>
-                        <Link to={'/home'} className='text-xl'>Home</Link>
-                        
-                    </Navbar.Link>
-                    <Navbar.Link href="#" className='text-xl'>
-                    <Link to={'/market'} className='text-xl'>About</Link>
-                    
-                    </Navbar.Link>
-                    <Navbar.Link href="#" className='text-xl'>
-                    <Link to={'/login'} className='text-xl'>Shop</Link>
-                    
-                    </Navbar.Link>
-                    <Navbar.Link href="#" className='text-xl'>
-                    <Link to={'/profile'}>
-                    Contact
-                    </Link>
-                    </Navbar.Link>
-                </Navbar.Collapse>
-                    </div>
+                    <Navbar.Collapse className='  w-[100vw] flex justify-between'>
+                        <Navbar.Link href="#" active>
+                            <Link to={'/home'} className='text-xl'>Home</Link>
+
+                        </Navbar.Link>
+                        <Navbar.Link href="#" className='text-xl'>
+                            <Link to={'/market'} className='text-xl'>About</Link>
+
+                        </Navbar.Link>
+                        <Navbar.Link href="#" className='text-xl'>
+                            <Link to={'/login'} className='text-xl'>Shop</Link>
+
+                        </Navbar.Link>
+                        <Navbar.Link href="#" className='text-xl'>
+                            <Link to={'/profile'}>
+                                Contact
+                            </Link>
+                        </Navbar.Link>
+                    </Navbar.Collapse>
+                </div>
             </Navbar>
-            
 
 
+            <Modal show={openModal} onClose={() => setOpenModal(false)}>
+                <Modal.Header>Terms of Service</Modal.Header>
+                <Modal.Body>
+                    <div className="space-y-6">
+                        <h1>Cart ({totalUniqueItems})</h1>
+
+                        <ul>
+                            {items.map((element) => {
+                                return (
+                                    <li key={element.id}>
+                                        <div className=' flex flex-row-reverse justify-around'>
+                                            <div>
+
+                                                {element.quantity} x {element.Name} &mdash;
+                                                <br />{"$" + element.price}
+                                            </div>
+                                            <div >
+
+                                                <img src={element.image} className='h-[20vh] w-[10vw]' alt="" />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => updateItemQuantity(element.id, element.quantity - 1)}
+                                        >
+
+                                        </button>
+                                        <button
+                                            onClick={() => updateItemQuantity(element.id, element.quantity + 1)}
+                                        >
+
+                                        </button>
+                                        <button onClick={() => removeItem(element.price)}>&times;</button>
+                                    </li>);
+                            })}
+                        </ul>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() => setOpenModal(false)}>I accept</Button>
+                    <Button color="gray" onClick={() => setOpenModal(false)}>
+                        Decline
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
         </>
     );

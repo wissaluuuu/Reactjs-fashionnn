@@ -7,18 +7,36 @@ import { SlSocialTwitter } from "react-icons/sl";
 import { IoLogoGoogleplus } from "react-icons/io";
 import { SlSocialInstagram } from "react-icons/sl";
 import { Link } from 'react-router-dom';
+import { useCart } from 'react-use-cart';
 
 export const Section = () => {
     const [myProduct, setProduct] = useContext(MyContext);
     const [panier, setpanier] = useState([]);
     const [random, setRandom] = useState([]);
-    
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const { addItem } = useCart();
+    const categories = ['Best seller', 'OLD', 'SALE', 'NEW'];
+    const {
+        isEmpty,
+        totalUniqueItems,
+        items,
+        Price,
+        updateItemQuantity,
+        removeItem,
+    } = useCart();
+
     const RandomProducts = () => {
-        const shuffledProducts = myProduct.sort(() => 0.5 - Math.random()); 
+        const shuffledProducts = myProduct.sort(() => 0.5 - Math.random());
         setRandom(shuffledProducts.slice(0, 5));
     };
+    const filterProductsByCategory = (category) => {
+        setSelectedCategory(category);
+    };
 
-    console.log(myProduct);
+
+    const filter = selectedCategory ? myProduct.filter(product => product.Catégories === selectedCategory) : myProduct;
+
+
     return (
         <>
             {/* shop */}
@@ -32,11 +50,9 @@ export const Section = () => {
 
                     <h2 className='font-extrabold text-2xl'>Catégories</h2>
                     <div className='text-start mr-11 text-gray-400'>
-
-                        <p className='py-2 '>Best seller</p>
-                        <p className='py-2 '>Featured</p>
-                        <p className='py-2 '>Men</p>
-                        <p className='py-2 '>Women</p>
+                        {categories.map(category => (
+                            <p key={category} className={`py-2 ${selectedCategory === category ? 'font-bold' : ''}`} onClick={() => filterProductsByCategory(category)}>{category}</p>
+                        ))}
                     </div>
                     <h2 className='font-extrabold text-2xl  w-[8vw] py-2'>Size</h2>
                     <div className='text-start mr-11  text-gray-400 flex flex-col w-[5vw]'>
@@ -49,27 +65,35 @@ export const Section = () => {
                     </div>
                 </div>
                 {/* products */}
-                
+
                 <div className=' w-[80%] h-fit  text-gray-500 flex flex-wrap gap-6 p-10 '>
 
                     {
-                        myProduct.map((element, index) =>
-                            <div key={index} className='flex flex-col w-[20vw] h-fit'>
+                        filter.map((element, index) =>
 
-                                <img src={element.image} alt="" className='w-[100%] h-fit min-h-[55vh] transition-opacity duration-300 hover:opacity-75' />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                            <div className=' h-fit w-72 group flex flex-col'>
+                                <div class="group w-72 relative cursor-pointer items-center justify-center overflow-hidden transition-shadow ">
+                                    <div class="h-96 w-72">
+                                        <img class="h-full w-full object-cover transition-transform duration-500 group-hover:rotate-3 group-hover:scale-125" src={element.image} alt="" />
+                                    </div>
+                                    <div class=" w-72 absolute inset-0 bg-gradient-to-b from-transparent via-transparent  group-hover:from-black/70 group-hover:via-black/60 group-hover:to-black/70"></div>
+                                    <div key={element.id} class=" w-72 absolute inset-0 flex translate-y-[60%] flex-col items-center justify-center px-9 text-center transition-all duration-500 group-hover:translate-y-[40%]">
+                                        <button key={element.id} class="rounded-full  py-2 px-3.5 font-com text-sm capitalize shadow shadow-black/60 bg-gray-100 text-gray-900 hover:bg-pink-300 hover:text-white duration-300"
+                                            onClick={() => addItem(element)}
+                                        >ADD TO CART</button>
+                                    </div>
                                 </div>
                                 <Link to={`/settings/${element.id}`} >
                                     <h1>{element.Name}</h1>
                                 </Link>
-                                <h1>{element.Price}</h1>
+                                <h1>{element.price}</h1>
                             </div>
                         )
                     }
                 </div>
 
             </div>
-           
+
         </>
     );
 };

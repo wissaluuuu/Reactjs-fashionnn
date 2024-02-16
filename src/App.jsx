@@ -9,9 +9,12 @@ import { ProfilePage } from './pages/Profile/profile';
 import { Settings } from './pages/Settings/settings';
 import { Header } from './layouts/header';
 import { ProductPage } from './pages/Market_Product/Products';
+import { CartProvider } from 'react-use-cart';
 function App() {
   return (
     <MyProvider>
+      <CartProvider>
+      
       <Header/>
       <Routes >
         <Route path='/home' element={<HomePage />} />
@@ -22,6 +25,7 @@ function App() {
         <Route path='/settings/:id' element={<Settings />} />
         <Route path='/products/:id' element={<ProductPage/>} />
       </Routes >
+    </CartProvider>
     </MyProvider>
 
   );
